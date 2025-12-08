@@ -1,0 +1,43 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Cortex-Debug ST-LINK (lora_home_controller)",
+      "type": "cortex-debug",
+      "request": "launch",
+
+      // Where to run GDB from
+      "cwd": "${workspaceFolder}",
+
+      // Your firmware ELF
+      "executable": "${workspaceFolder}/build/Debug/lora_home_controller.elf",
+
+      // Use ST-LINK GDB server
+      "servertype": "stlink",
+      "serverpath": "/home/frank/st/stm32cubeclt_1.20.0/STLink-gdb-server/bin/ST-LINK_gdbserver",
+
+      // MCU type (for SVD / some helpers)
+      "device": "STM32G431K8",       // change if you're on G4, etc.
+      "interface": "swd",
+
+      // Start and stop
+      "runToMain": true,
+      "runToEntryPoint": "main",
+
+      // Optional: build before debug (if you have this task)
+      // "preLaunchTask": "cmake-build",
+
+      // Optional: SVD for nice peripheral view (put the file in your repo)
+      // "svdFile": "${workspaceFolder}/STM32G0x1.svd",
+
+      // Debugger verbosity
+      "showDevDebugOutput": "none",
+
+      // Optional Live Watch (Cortex-Debug feature)
+      "liveWatch": {
+        "enabled": true,
+        "samplesPerSecond": 5
+      }
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      // 1) Configure CMake for Debug build
+      "label": "cmake-configure-debug",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        "-S", ".",
+        "-B", "build/Debug",
+        "-DCMAKE_BUILD_TYPE=Debug"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      }
+    },
+    {
+      // 2) Build (and auto-configure if needed)
+      //    This is the main one you'll use.
+      "label": "cmake-build",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        "--build", "build/Debug",
+        "--parallel"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": "$gcc",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "dependsOn": "cmake-configure-debug"
+    },
+    {
+      // 3) Optional: clean the build directory
+      "label": "cmake-clean",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        "--build", "build/Debug",
+        "--target", "clean"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "group": "none"
+    }
+  ]
+}
