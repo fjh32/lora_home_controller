@@ -1,6 +1,9 @@
 #include "lora_message_types.h"
 
-int check_valid_lora_message(LoraMessage * lora_message);
+/**
+* Returns 1 if valid, 0 if not
+*/
+int check_valid_lora_message(LoraMessage *lora_message);
 
 /**
 * Decode a byte buffer into a LoraMessage

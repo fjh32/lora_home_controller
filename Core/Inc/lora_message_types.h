@@ -75,13 +75,25 @@ typedef struct {
 /**
     Message Type:
         STREAM (sequence transfer)
+
+        // Think of a proper state machine here for an asynchronous stream
+            - 1 stream has n sequences
+            - ACK on a sequence
 */
+typedef enum {
+    LORA_STREAM_JPEG,
+    LORA_STREAM_RAW
+} LoraStreamType;
+
 typedef struct {
     uint8_t _reserved;
 } LoraStreamRequest;
 
 typedef struct {
-    uint16_t sequence_id;
+    // uint16_t sequence_id;
+    LoraStreamType stream_type;
+    uint16_t stream_id;
+    uint16_t total_sequences;
     uint16_t total_packets;
     uint32_t total_bytes;
 } LoraStreamAnnounceResp;
