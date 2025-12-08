@@ -1,5 +1,10 @@
 #include "lora_home_controller.h"
 
+void lora_home_controller_interrupt_handler(LoRa *lora)
+{
+
+}
+
 int setup_lora_home_controller(
     LoRa*           lora,
     GPIO_TypeDef*		CS_port,

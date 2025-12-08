@@ -1,3 +1,5 @@
+#pragma once
+
 #include <stdint.h>
 #include <stddef.h>
 
@@ -76,20 +78,20 @@ typedef struct {
 */
 typedef struct {
     uint8_t _reserved;
-} LoraStreamReq;
+} LoraStreamRequest;
 
 typedef struct {
     uint16_t sequence_id;
     uint16_t total_packets;
     uint32_t total_bytes;
-} LoraStreamAnnounce;
+} LoraStreamAnnounceResp;
 
 typedef struct {
     uint16_t sequence_id;     // which sequence this packet belongs to
     uint16_t packet_index;    // 0 .. total_packets-1
     uint8_t  chunk_len;       // number of valid bytes in chunk[]
     uint8_t  chunk[LORA_STREAM_MAX_CHUNK_SIZE];
-} LoraStreamData;
+} LoraStreamDataResp;
 
 typedef enum {
     LORA_STREAM_STATUS_OK = 0,

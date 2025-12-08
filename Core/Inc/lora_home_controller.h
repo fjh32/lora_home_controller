@@ -1,6 +1,3 @@
-#ifndef LORA_HOME_CONTROLLER_H
-#define LORA_HOME_CONTROLLER_H
-
 #include "LoRa.h"
 
 /*
@@ -25,5 +22,3 @@ int setup_lora_home_controller(
 	uint16_t		enable_pin,
 	SPI_HandleTypeDef*	hSPIx
 );
-
-#endif

@@ -4,7 +4,9 @@
  *  Created on: May 10, 2025
  *      Author: frank
  */
-#include "main.h"
+#pragma once
+#include "stdint.h"
+#include "stm32g4xx_hal.h" 
 
 #define TRANSMIT_TIMEOUT		2000
 #define RECEIVE_TIMEOUT			2000

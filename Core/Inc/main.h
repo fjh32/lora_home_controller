@@ -30,8 +30,10 @@ extern "C" {
 #include "stm32g4xx_hal.h"
 
 /* Private includes ----------------------------------------------------------*/
-/* USER CODE BEGIN Includes */
-
+/* USER CODE BEGIN Includes */ 
+#include "uart_print.h"
+#include "lora_message_types.h"
+#include "lora_home_controller.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
