@@ -85,25 +85,35 @@ typedef enum {
     LORA_STREAM_RAW
 } LoraStreamType;
 
+// Client sends this to request a stream of LoraStreamType
 typedef struct {
-    uint8_t _reserved;
+    LoraStreamType stream_type;
 } LoraStreamRequest;
 
+// Sent either arbitrarily as a broadcast or as a response to a LoraStreamRequest
 typedef struct {
-    // uint16_t sequence_id;
     LoraStreamType stream_type;
-    uint16_t stream_id;
-    uint16_t total_sequences;
-    uint16_t total_packets;
-    uint32_t total_bytes;
-} LoraStreamAnnounceResp;
+    uint8_t stream_id;
+    uint16_t sequence_number; // announce a sequence number
+} LoraStreamAnnounce;
 
 typedef struct {
-    uint16_t sequence_id;     // which sequence this packet belongs to
-    uint16_t packet_index;    // 0 .. total_packets-1
+    uint8_t stream_id;
+    uint16_t sequence_number; // May be an undefined number of sequences at this point.
+    uint8_t packets_in_sequence;
+} LoraStreamAnnounceAck;
+
+// The data is contained in these messages. 
+// Each packet represents a series of bytes indexed in stream_id via sequence_number and packet_index.
+typedef struct {
+    LoraStreamType stream_type;
+    uint8_t stream_id;
+    uint16_t sequence_number;     // which sequence this packet belongs to
+    uint16_t packet_index;    // 0 .. sequence_number - 1
+    uint8_t packets_in_sequence;
     uint8_t  chunk_len;       // number of valid bytes in chunk[]
     uint8_t  chunk[LORA_STREAM_MAX_CHUNK_SIZE];
-} LoraStreamDataResp;
+} LoraStreamSequence;
 
 typedef enum {
     LORA_STREAM_STATUS_OK = 0,
@@ -111,11 +121,16 @@ typedef enum {
 } LoraStreamStatus;
 
 typedef struct {
-    uint16_t sequence_id;
+    uint8_t stream_id;
+    uint16_t sequence_number;
     LoraStreamStatus status;
     // bitmask of missing packets?
 } LoraStreamSequenceAck;
 
+// sent by sender when entire stream contents has been sent
+typedef struct {
+    uint8_t stream_id;
+} LoraStreamComplete;
 
 /**
     LoraMessage
