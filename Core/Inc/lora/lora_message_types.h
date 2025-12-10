@@ -6,7 +6,8 @@
 typedef uint8_t NodeId;
 
 #define LORA_NODE_BROADCAST_ID ((NodeId)0xFF)
-#define LORA_STREAM_MAX_CHUNK_SIZE 48
+#define LORA_STREAM_MAX_CHUNK_SIZE 128
+#define LORA_STREAM_MAX_PACKETS_PER_SEQ 32
 
 /**
     Message Type:
@@ -34,6 +35,7 @@ typedef enum  {
 
 typedef union {
     ClimateData climate_data;
+    // will add more data types later, so keep the union here
 } LoraDataPayload;
 
 typedef struct {
@@ -43,7 +45,7 @@ typedef struct {
 typedef struct {
     LoraDataType data_type;
     LoraDataPayload payload;
-} LoraDataResp;
+} LoraData;
 
 /**
     Message Type:
@@ -69,6 +71,7 @@ typedef struct {
 } LoraCommandReq;
 
 typedef struct {
+    CommandType command_type;
     CommandStatus command_status;
 } LoraCommandResp;
 
@@ -95,12 +98,12 @@ typedef struct {
     LoraStreamType stream_type;
     uint8_t stream_id;
     uint16_t sequence_number; // announce a sequence number
+    uint8_t packets_in_sequence;
 } LoraStreamAnnounce;
 
 typedef struct {
     uint8_t stream_id;
     uint16_t sequence_number; // May be an undefined number of sequences at this point.
-    uint8_t packets_in_sequence;
 } LoraStreamAnnounceAck;
 
 // The data is contained in these messages. 
@@ -109,7 +112,7 @@ typedef struct {
     LoraStreamType stream_type;
     uint8_t stream_id;
     uint16_t sequence_number;     // which sequence this packet belongs to
-    uint16_t packet_index;    // 0 .. sequence_number - 1
+    uint8_t packet_index;    // 0 .. packets_insequence - 1
     uint8_t packets_in_sequence;
     uint8_t  chunk_len;       // number of valid bytes in chunk[]
     uint8_t  chunk[LORA_STREAM_MAX_CHUNK_SIZE];
@@ -124,7 +127,7 @@ typedef struct {
     uint8_t stream_id;
     uint16_t sequence_number;
     LoraStreamStatus status;
-    // bitmask of missing packets?
+    uint32_t missing_bitmap; // bit i = 1 means packet i is missing
 } LoraStreamSequenceAck;
 
 // sent by sender when entire stream contents has been sent
@@ -145,15 +148,17 @@ typedef enum {
     LORA_PING_RESPONSE = 2,
 
     LORA_DATA_REQUEST = 3,
-    LORA_DATA_RESPONSE = 4, // eg request sensor data
+    LORA_DATA = 4, // eg sensor data
 
     LORA_COMMAND_REQUEST = 5, // eg close chicken coop door
     LORA_COMMAND_RESPONSE = 6,
 
     LORA_STREAM_REQUEST = 7,
-    LORA_STREAM_ANNOUNCE_RESPONSE = 8,
-    LORA_STREAM_DATA = 9,
-    LORA_STREAM_SEQUENCE_ACK = 10,
+    LORA_STREAM_ANNOUNCE = 8,
+    LORA_STREAM_ANNOUNCE_ACK = 9,
+    LORA_STREAM_SEQUENCE = 10,
+    LORA_STREAM_SEQUENCE_ACK = 11,
+    LORA_STREAM_COMPLETE = 12,
 } LoraMessageType;
 
 typedef struct {
@@ -168,15 +173,17 @@ typedef struct {
     LoraPingResp    ping_resp;
 
     LoraDataReq     data_req;
-    LoraDataResp    data_resp;
+    LoraData    data;
 
     LoraCommandReq  command_req;
     LoraCommandResp command_resp;
     
     LoraStreamRequest stream_req;
-    LoraStreamAnnounceResp stream_announce_resp;
-    LoraStreamDataResp stream_data_resp;
+    LoraStreamAnnounce stream_announce;
+    LoraStreamAnnounceAck stream_announce_ack;
+    LoraStreamSequence stream_sequence;
     LoraStreamSequenceAck stream_seq_ack;
+    LoraStreamComplete stream_complete;
 } LoraPayload;
 
 typedef struct {

@@ -8,6 +8,34 @@
 
 #include "LoRa.h"
 
+
+uint8_t SetupLoraWithPins(LoRa * lora,
+						GPIO_TypeDef*		CS_port,
+						uint16_t		CS_pin,
+						GPIO_TypeDef*		reset_port,
+						uint16_t		reset_pin,
+						GPIO_TypeDef*		DIO0_port,
+						uint16_t		DIO0_pin,
+						GPIO_TypeDef*		enable_port,
+						uint16_t		enable_pin,
+						SPI_HandleTypeDef*	hSPIx)
+{
+	*lora = newLoRaLongRange();
+
+	lora->CS_port         = CS_port;
+	lora->CS_pin          = CS_pin;
+	lora->reset_port      = reset_port;
+	lora->reset_pin       = reset_pin;
+	lora->DIO0_port       = DIO0_port;
+	lora->DIO0_pin        = DIO0_pin;
+	lora->enable_port	   = enable_port;
+	lora->enable_pin	   = enable_pin;
+	lora->hSPIx           = hSPIx;
+
+	uint8_t init_status = LoRa_init(lora);
+	return init_status;
+}
+
 /* ----------------------------------------------------------------------------- *\
 		name        : newLoRa
 
@@ -683,4 +711,14 @@ uint16_t LoRa_init(LoRa* _LoRa){
 	else {
 		return LORA_UNAVAILABLE;
 	}
+}
+
+uint8_t LoRa_single_transmit(LoRa* _LoRa, uint8_t* data, uint8_t length, uint16_t timeout)
+{
+	LoRa_gotoMode(_LoRa, TRANSMIT_MODE);
+	HAL_Delay(10);
+	uint8_t status = LoRa_transmit(_LoRa, data, length, timeout);
+	HAL_Delay(10);
+	LoRa_startReceiving(_LoRa);
+	return status;
 }

@@ -32,8 +32,9 @@ extern "C" {
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */ 
 #include "uart_print.h"
-#include "lora_message_types.h"
-#include "lora_home_controller.h"
+#include "LoRa.h"
+#include "lora_codec.h"
+#include "lora_engine.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/

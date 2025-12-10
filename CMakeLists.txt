@@ -45,21 +45,23 @@ target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
 # Add sources to executable
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user sources here
-    Core/Inc/lora_message_types.h
+    Core/Src/lora/lora_codec.c
+    Core/Src/lora/lora_engine.c
+    Core/Src/lora/LoRa.c
+    Core/Src/lora/lora_home_controller.c
+    Core/Inc/lora/lora_message_types.h
+    
+    Core/Src/lora_handlers/simple_ping_handler.c
 
     Core/Src/uart_print.c
-    Core/Src/LoRa.c
-    # Core/Src/lora_codec.c
-    # Core/Src/lora_engine.c
-    Core/Src/lora_home_controller.c
-    
-
-    
 )
 
 # Add include paths
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user defined include paths
+    Core/Inc
+    Core/Inc/lora
+    Core/Inc/lora_handlers
 )
 
 # Add project symbols (macros)

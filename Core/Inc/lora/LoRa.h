@@ -114,6 +114,17 @@ LoRa newLoRa(void);
 LoRa newLoRaLongRange(void);
 LoRa newLoRaLongRangeBoost(void);
 
+uint8_t SetupLoraWithPins(LoRa * lora,
+						GPIO_TypeDef*		CS_port,
+						uint16_t		CS_pin,
+						GPIO_TypeDef*		reset_port,
+						uint16_t		reset_pin,
+						GPIO_TypeDef*		DIO0_port,
+						uint16_t		DIO0_pin,
+						GPIO_TypeDef*		enable_port,
+						uint16_t		enable_pin,
+						SPI_HandleTypeDef*	hSPIx);
+
 void LoRa_reset(LoRa* _LoRa);
 void LoRa_readReg(LoRa* _LoRa, uint8_t* address, uint16_t r_length, uint8_t* output, uint16_t w_length);
 void LoRa_writeReg(LoRa* _LoRa, uint8_t* address, uint16_t r_length, uint8_t* values, uint16_t w_length);
@@ -137,5 +148,7 @@ void LoRa_startReceiving(LoRa* _LoRa);
 uint8_t LoRa_receive(LoRa* _LoRa, uint8_t* data, uint8_t length);
 void LoRa_receive_IT(LoRa* _LoRa, uint8_t* data, uint8_t length); // not implemented
 int LoRa_getRSSI(LoRa* _LoRa);
+
+uint8_t LoRa_single_transmit(LoRa* _LoRa, uint8_t* data, uint8_t length, uint16_t timeout);
 
 uint16_t LoRa_init(LoRa* _LoRa);
