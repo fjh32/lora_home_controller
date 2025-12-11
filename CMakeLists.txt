@@ -48,7 +48,6 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     Core/Src/lora/lora_codec.c
     Core/Src/lora/lora_engine.c
     Core/Src/lora/LoRa.c
-    Core/Src/lora/lora_home_controller.c
     Core/Inc/lora/lora_message_types.h
 
     Core/Src/uart_print.c

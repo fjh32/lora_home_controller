@@ -3,7 +3,7 @@
 
 /**
  * Maximum number of bytes that lora_encode() will ever output for a single
- * LoraMessage, given current definitions.
+ * LoraMessage, given current definitions in lora_message_types.h
  *
  * Layout worst-case:
  *   1 byte  message_type
