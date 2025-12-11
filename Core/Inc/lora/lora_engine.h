@@ -9,7 +9,7 @@ typedef struct {
     NodeId local_id;
     uint8_t (*transmit)(void * _lora_ctx, uint8_t* data, uint8_t length, uint16_t timeout);
     uint8_t (*receive)(void * _lora_ctx, uint8_t* data, uint8_t length); // called when something is in the receive buffer
-    uint8_t receive_ready_flag;
+    volatile uint8_t receive_ready_flag;
     void * lora_ctx;
 } LoraDriver;
 
@@ -64,7 +64,7 @@ typedef void (*LoraStreamCompleteHandler)(LoraEngine *engine,
 
 
 struct _LoraEngine {
-    LoraDriver driver;
+    LoraDriver *driver;
     NodeId local_id;
 
     LoraPingReqHandler           on_ping_req;
@@ -82,14 +82,12 @@ struct _LoraEngine {
     LoraStreamSequenceHandler    on_stream_sequence;
     LoraStreamSequenceAckHandler on_stream_seq_ack;
     LoraStreamCompleteHandler    on_stream_complete;
-
-
 };
 
 /**
 *   initialize a LoraEngine. Provide a LoraDriver implementation.
 */
-void lora_engine_init(LoraEngine *engine, const LoraDriver *driver);
+void lora_engine_init(LoraEngine *engine, LoraDriver *driver);
 
 /**
 *   send a LoraMessage over the LoraEngine.
