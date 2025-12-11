@@ -1,6 +1,7 @@
 #include "simple_ping_handler.h"
 #include "LoRa.h"
 #include "lora_engine.h"
+#include "lora_message_types.h"
 
 static void handle_ping_req(const LoraPingReq *req,
                             const LoraMetadata *meta,
@@ -13,7 +14,7 @@ static void handle_ping_req(const LoraPingReq *req,
     // Build response message
     LoraMessage resp = {0};
     resp.message_type     = LORA_PING_RESPONSE;
-    resp.metadata.source  = 1;   // or provided externally
+    resp.metadata.source  = meta->dest;   // TODO fix this need to pass through ctx or something
     resp.metadata.dest    = meta->source;
 
     // Encode
@@ -44,7 +45,7 @@ static void handle_ping_resp(const LoraPingResp *resp,
 // Public initializer
 // ------------------------------
 
-void simple_ping_handler_init(LoraHandlers *handlers, LoraDriver *lora_driver)
+void simple_ping_handler_init(LoraHandlers *handlers, LoraDriver *lora_driver, NodeId id)
 {
     // Zero out handler table first
     memset(handlers, 0, sizeof(*handlers));
@@ -55,4 +56,5 @@ void simple_ping_handler_init(LoraHandlers *handlers, LoraDriver *lora_driver)
 
     // ctx will be the LoRa hardware object
     handlers->ctx = lora_driver;
+    handlers->myId = id;
 }

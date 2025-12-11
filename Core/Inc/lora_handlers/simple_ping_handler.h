@@ -12,4 +12,4 @@
 // typedef struct LoRa lora;
 
 // Create a handler table for ping-only behavior
-void simple_ping_handler_init(LoraHandlers *handlers, LoraDriver *lora_driver);
+void simple_ping_handler_init(LoraHandlers *handlers, LoraDriver *lora_driver, NodeId id);

@@ -139,7 +139,7 @@ int main(void)
   lora_driver.transmit = lora_driver_transmit_func;
 
   // STEP 3) setup ping handler object to pass the engine
-  simple_ping_handler_init(&simple_lora_handler, &lora_driver);
+  simple_ping_handler_init(&simple_lora_handler, &lora_driver, MY_NODE_ID);
 
   // STEP 4) setup lora engine
   lora_engine_init(&lora_engine, &lora_driver, &simple_lora_handler);
@@ -153,7 +153,7 @@ int main(void)
     {
       uint8_t received_data[256];
       uint8_t packet_size = 0;
-
+      /// TURN THIS INTO lora_engine_receive because lora engine has the driver, add receive to driver
       packet_size = LoRa_receive(&lora, received_data, sizeof(received_data));
       LoraMessage msg;
       if(!lora_decode(received_data, sizeof(received_data), &msg))

@@ -70,13 +70,14 @@ typedef struct {
     LoraStreamCompleteHandler    on_stream_complete;
 
     void *ctx;
+    NodeId myId;
 } LoraHandlers;
 
 typedef struct {
     NodeId local_id;
     uint8_t (*transmit)(uint8_t* data, uint8_t length, uint16_t timeout);
     void * lora_ctx;
-} LoraDriver;
+} LoraDriver; // TODO add receive
 
 typedef struct {
     NodeId local_id;

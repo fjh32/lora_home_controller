@@ -23,7 +23,7 @@ uint8_t lora_engine_send(LoraEngine *engine,
 
     // Default source if not set
     if (msg->metadata.source == 0) {
-        msg->metadata.source = engine->driver.local_id;
+        msg->metadata.source = engine->handlers.myId;
     }
 
     uint8_t buf[LORA_MAX_ENCODED_SIZE];
@@ -49,9 +49,9 @@ uint8_t lora_engine_send_ping(LoraEngine *engine,
 {
     LoraMessage msg = {0};
     msg.message_type     = LORA_PING_REQUEST;
-    msg.metadata.source  = engine->driver.local_id; // optional, send() will fill
+    msg.metadata.source  = engine->handlers.myId; // optional, send() will fill
     msg.metadata.dest    = dest;
-    return lora_engine_send(engine, &msg, timeout);
+    return lora_engine_send(engine, &msg, timeout); 
 }
 
 
