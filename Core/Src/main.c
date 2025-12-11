@@ -20,7 +20,6 @@
 #include "main.h"
 #include "LoRa.h"
 #include "lora_engine.h"
-#include "simple_ping_handler.h"
 #include "spi.h"
 #include "stm32g4xx_hal.h"
 #include "usart.h"
@@ -42,7 +41,6 @@
 // #define MY_NODE_ID 2
 
 LoRa lora;
-LoraHandlers simple_lora_handler;
 LoraDriver lora_driver;
 LoraEngine lora_engine;
 
@@ -120,47 +118,47 @@ int main(void)
   /* USER CODE BEGIN WHILE */
 
   // STEP 1) setup lora object
-  if(!SetupLoraWithPins(&lora, 
-      LORA_CS_PIN_GPIO_Port, 
-      LORA_CS_PIN_Pin, 
-      LORA_RST_PIN_GPIO_Port, 
-      LORA_RST_PIN_Pin, 
-      LORA_IRQ_PIN_GPIO_Port, 
-      LORA_IRQ_PIN_Pin, 
-      LORA_ENA_PIN_GPIO_Port, 
-      LORA_ENA_PIN_Pin, 
-      &hspi1))
-  {
-    Error_Handler();
-  }
-  // STEP 2) SETUP LORA DRIVER
-  lora_driver.lora_ctx = (void *) &lora;
-  lora_driver.local_id = MY_NODE_ID;
-  lora_driver.transmit = lora_driver_transmit_func;
+  // if(!SetupLoraWithPins(&lora, 
+  //     LORA_CS_PIN_GPIO_Port, 
+  //     LORA_CS_PIN_Pin, 
+  //     LORA_RST_PIN_GPIO_Port, 
+  //     LORA_RST_PIN_Pin, 
+  //     LORA_IRQ_PIN_GPIO_Port, 
+  //     LORA_IRQ_PIN_Pin, 
+  //     LORA_ENA_PIN_GPIO_Port, 
+  //     LORA_ENA_PIN_Pin, 
+  //     &hspi1))
+  // {
+  //   Error_Handler();
+  // }
+  // // STEP 2) SETUP LORA DRIVER
+  // lora_driver.lora_ctx = (void *) &lora;
+  // lora_driver.local_id = MY_NODE_ID;
+  // lora_driver.transmit = lora_driver_transmit_func;
 
-  // STEP 3) setup ping handler object to pass the engine
-  simple_ping_handler_init(&simple_lora_handler, &lora_driver, MY_NODE_ID);
+  // // STEP 3) setup ping handler object to pass the engine
+  // simple_ping_handler_init(&simple_lora_handler, &lora_driver, MY_NODE_ID);
 
-  // STEP 4) setup lora engine
-  lora_engine_init(&lora_engine, &lora_driver, &simple_lora_handler);
+  // // STEP 4) setup lora engine
+  // lora_engine_init(&lora_engine, &lora_driver, &simple_lora_handler);
 
   while (1)
   {
     /* USER CODE END WHILE */
-    HAL_Delay(3000);
-    lora_engine_send_ping(&lora_engine, LORA_NODE_BROADCAST_ID, 200);
-    if(lora_receive_flag)
-    {
-      uint8_t received_data[256];
-      uint8_t packet_size = 0;
-      /// TURN THIS INTO lora_engine_receive because lora engine has the driver, add receive to driver
-      packet_size = LoRa_receive(&lora, received_data, sizeof(received_data));
-      LoraMessage msg;
-      if(!lora_decode(received_data, sizeof(received_data), &msg))
-      {
-        lora_engine_handle_message(&lora_engine, &msg);
-      }
-    }
+    // HAL_Delay(3000);
+    // lora_engine_send_ping(&lora_engine, LORA_NODE_BROADCAST_ID, 200);
+    // if(lora_receive_flag)
+    // {
+    //   uint8_t received_data[256];
+    //   uint8_t packet_size = 0;
+    //   /// TURN THIS INTO lora_engine_receive because lora engine has the driver, add receive to driver
+    //   packet_size = LoRa_receive(&lora, received_data, sizeof(received_data));
+    //   LoraMessage msg;
+    //   if(!lora_decode(received_data, sizeof(received_data), &msg))
+    //   {
+    //     lora_engine_handle_message(&lora_engine, &msg);
+    //   }
+    // }
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */

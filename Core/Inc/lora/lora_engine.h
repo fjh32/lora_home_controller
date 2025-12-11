@@ -2,57 +2,71 @@
 
 #include <stdint.h>
 #include "lora_message_types.h"
-#include "lora_codec.h"
 
-typedef void (*LoraPingReqHandler)(const LoraPingReq *msg,
-                                   const LoraMetadata *meta,
-                                   void *ctx);
-
-typedef void (*LoraPingRespHandler)(const LoraPingResp *msg,
-                                    const LoraMetadata *meta,
-                                    void *ctx);
-
-typedef void (*LoraDataReqHandler)(const LoraDataReq *msg,
-                                   const LoraMetadata *meta,
-                                   void *ctx);
-
-typedef void (*LoraDataHandler)(const LoraData *msg,
-                                const LoraMetadata *meta,
-                                void *ctx);
-
-typedef void (*LoraCommandReqHandler)(const LoraCommandReq *msg,
-                                      const LoraMetadata *meta,
-                                      void *ctx);
-
-typedef void (*LoraCommandRespHandler)(const LoraCommandResp *msg,
-                                       const LoraMetadata *meta,
-                                       void *ctx);
-
-typedef void (*LoraStreamRequestHandler)(const LoraStreamRequest *msg,
-                                         const LoraMetadata *meta,
-                                         void *ctx);
-
-typedef void (*LoraStreamAnnounceHandler)(const LoraStreamAnnounce *msg,
-                                          const LoraMetadata *meta,
-                                          void *ctx);
-
-typedef void (*LoraStreamAnnounceAckHandler)(const LoraStreamAnnounceAck *msg,
-                                             const LoraMetadata *meta,
-                                             void *ctx);
-
-typedef void (*LoraStreamSequenceHandler)(const LoraStreamSequence *msg,
-                                          const LoraMetadata *meta,
-                                          void *ctx);
-
-typedef void (*LoraStreamSequenceAckHandler)(const LoraStreamSequenceAck *msg,
-                                             const LoraMetadata *meta,
-                                             void *ctx);
-
-typedef void (*LoraStreamCompleteHandler)(const LoraStreamComplete *msg,
-                                          const LoraMetadata *meta,
-                                          void *ctx);
+typedef struct _LoraEngine LoraEngine;
 
 typedef struct {
+    NodeId local_id;
+    uint8_t (*transmit)(void * _lora_ctx, uint8_t* data, uint8_t length, uint16_t timeout);
+    uint8_t (*receive)(void * _lora_ctx, uint8_t* data, uint8_t length); // called when something is in the receive buffer
+    uint8_t receive_ready_flag;
+    void * lora_ctx;
+} LoraDriver;
+
+
+typedef void (*LoraPingReqHandler)(LoraEngine *engine,
+                                   const LoraPingReq *msg,
+                                   const LoraMetadata *meta);
+
+typedef void (*LoraPingRespHandler)(LoraEngine *engine,
+                                    const LoraPingResp *msg,
+                                    const LoraMetadata *meta);
+
+typedef void (*LoraDataReqHandler)(LoraEngine *engine,
+                                   const LoraDataReq *msg,
+                                   const LoraMetadata *meta);
+
+typedef void (*LoraDataHandler)(LoraEngine *engine,
+                                const LoraData *msg,
+                                const LoraMetadata *meta);
+
+typedef void (*LoraCommandReqHandler)(LoraEngine *engine,
+                                      const LoraCommandReq *msg,
+                                      const LoraMetadata *meta);
+
+typedef void (*LoraCommandRespHandler)(LoraEngine *engine,
+                                       const LoraCommandResp *msg,
+                                       const LoraMetadata *meta);
+
+typedef void (*LoraStreamRequestHandler)(LoraEngine *engine,
+                                         const LoraStreamRequest *msg,
+                                         const LoraMetadata *meta);
+
+typedef void (*LoraStreamAnnounceHandler)(LoraEngine *engine,
+                                          const LoraStreamAnnounce *msg,
+                                          const LoraMetadata *meta);
+
+typedef void (*LoraStreamAnnounceAckHandler)(LoraEngine *engine,
+                                             const LoraStreamAnnounceAck *msg,
+                                             const LoraMetadata *meta);
+
+typedef void (*LoraStreamSequenceHandler)(LoraEngine *engine,
+                                          const LoraStreamSequence *msg,
+                                          const LoraMetadata *meta);
+
+typedef void (*LoraStreamSequenceAckHandler)(LoraEngine *engine,
+                                             const LoraStreamSequenceAck *msg,
+                                             const LoraMetadata *meta);
+
+typedef void (*LoraStreamCompleteHandler)(LoraEngine *engine,
+                                          const LoraStreamComplete *msg,
+                                          const LoraMetadata *meta);
+
+
+struct _LoraEngine {
+    LoraDriver driver;
+    NodeId local_id;
+
     LoraPingReqHandler           on_ping_req;
     LoraPingRespHandler          on_ping_resp;
 
@@ -69,46 +83,37 @@ typedef struct {
     LoraStreamSequenceAckHandler on_stream_seq_ack;
     LoraStreamCompleteHandler    on_stream_complete;
 
-    void *ctx;
-    NodeId myId;
-} LoraHandlers;
 
-typedef struct {
-    NodeId local_id;
-    uint8_t (*transmit)(uint8_t* data, uint8_t length, uint16_t timeout);
-    void * lora_ctx;
-} LoraDriver; // TODO add receive
-
-typedef struct {
-    NodeId local_id;
-    LoraHandlers handlers;
-    LoraDriver driver;
-} LoraEngine;
-
-void lora_engine_init(LoraEngine *engine,
-                      const LoraDriver *driver,
-                      const LoraHandlers *handlers);
+};
 
 /**
- * Encode and transmit a message using the engine's driver.
- * - Fills msg->metadata.source with driver.local_id if it is 0.
- *
- * @return driver transmit return value (0/1 or whatever your driver uses),
- *         or 0 on encode error / missing transmit function.
- */
+*   initialize a LoraEngine. Provide a LoraDriver implementation.
+*/
+void lora_engine_init(LoraEngine *engine, const LoraDriver *driver);
+
+/**
+*   send a LoraMessage over the LoraEngine.
+*/
 uint8_t lora_engine_send(LoraEngine *engine,
                          LoraMessage *msg,
                          uint16_t timeout);
 
 /**
- * Convenience helper: send a PING_REQUEST to a destination node.
- */
+*   pass a LoraMessage to this engine for processing through 
+*   the appropriate handler function.
+*   ie this function routes a LoraMessage to the appropriate engine Handler function.
+*/
+void lora_engine_handle_message(LoraEngine *engine,
+                                const LoraMessage *msg);
+
+
+/**
+* Main Loop for LoraEngine
+*/
+void lora_engine_loop(LoraEngine *engine);
+
+// //////////////////////////////////////////////////////////////
+// simple requests
 uint8_t lora_engine_send_ping(LoraEngine *engine,
                               NodeId dest,
                               uint16_t timeout);
-
-/**
- * Dispatch a decoded message to appropriate handler.
- */
-void lora_engine_handle_message(LoraEngine *engine,
-                                const LoraMessage *msg);

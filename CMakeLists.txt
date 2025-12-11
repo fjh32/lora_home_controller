@@ -50,8 +50,6 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     Core/Src/lora/LoRa.c
     Core/Src/lora/lora_home_controller.c
     Core/Inc/lora/lora_message_types.h
-    
-    Core/Src/lora_handlers/simple_ping_handler.c
 
     Core/Src/uart_print.c
 )
@@ -61,7 +59,6 @@ target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user defined include paths
     Core/Inc
     Core/Inc/lora
-    Core/Inc/lora_handlers
 )
 
 # Add project symbols (macros)

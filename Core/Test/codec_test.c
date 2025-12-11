@@ -5,6 +5,8 @@
 #include "lora_message_types.h"
 #include "lora_codec.h"
 
+#define TEST_STREAM_SIZE 1028
+
 static int test_ping()
 {
     LoraMessage msg = {0};
@@ -117,14 +119,13 @@ static int test_stream()
     printf("STREAM test starting…\n");
 
     // Create 256 bytes of repeating A..Z letters
-    uint8_t big_data[1028];
-    for (int i = 0; i < 1028; ++i) {
+    uint8_t big_data[TEST_STREAM_SIZE];
+    for (int i = 0; i < TEST_STREAM_SIZE; ++i) {
         big_data[i] = 'A' + (i % 26);
     }
 
-    // We’ll test streaming it as 32-byte packets
-    const int packets = 256 / LORA_STREAM_MAX_CHUNK_SIZE
-                        + ((256 % LORA_STREAM_MAX_CHUNK_SIZE) ? 1 : 0);
+    const int packets = TEST_STREAM_SIZE / LORA_STREAM_MAX_CHUNK_SIZE
+                        + ((TEST_STREAM_SIZE % LORA_STREAM_MAX_CHUNK_SIZE) ? 1 : 0);
 
     uint16_t seq = 12;  // arbitrary test sequence number
     uint8_t stream_id = 7;
@@ -145,7 +146,7 @@ static int test_stream()
 
         // Fill chunk
         size_t offset = p * LORA_STREAM_MAX_CHUNK_SIZE;
-        size_t remaining = 256 - offset;
+        size_t remaining = TEST_STREAM_SIZE - offset;
         if (remaining > LORA_STREAM_MAX_CHUNK_SIZE)
             remaining = LORA_STREAM_MAX_CHUNK_SIZE;
 
